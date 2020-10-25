@@ -9,30 +9,19 @@
 //npm install mongoose --save       =>4.3.6 Modelado de objetos en node.Js, busca la parte de las consultas mediante un api, mapea una clase que es un modelo con una tabla
 //mongod    =>ejecutar el servidor con mongo
 
+
+
 //Solicitud de librerias:
 var express = require ("express");
 var bodyParser = require("body-parser");
-var mongoose = require('mongoose');
+var User = require("./models/user").User;
 
 //Objetos:
-var Schema = mongoose.Schema;
 var app = express();
 
 //Configuración:
-mongoose.connect("mongodb://localhost/fotos");//Espeficifa el servidor nos vamos a conectar / y luego el nombre de nuestra base de datos
 app.set("view engine","jade");//Motor de vistas tipo..
 
-//JSON:
-var userSchemaJSON = {
-    email:String,
-    password:String
-}
-
-//Schemas => crean objetos que mongoose entiende con un esquema, se convierten como en la estructura de la tabla
-var user_schema = new Schema(userSchemaJSON);
-
-//Modelos => Establecen la conexión con la base de datos, se les pasa el esquema que quiero que tenga en la tabla a la que va a mapear:
-var User = mongoose.model("User",user_schema);
 
 //MIDDLEWARES:
 //..de archivos estaticos => Sirve archivos estaticos, en la ruta especifica; Ej ruta midominio.com/public/:
@@ -42,9 +31,6 @@ app.use("/public",express.static('assets'));
 //.. de parsing => leer los archivos de la petición, buscar los archivos o parametros dentro de los datos, de una petición JSON, etc. y extraerlos:
 app.use(bodyParser.json());//para peticiones application/json
 app.use(bodyParser.urlencoded({extended:true}));//para peticiones url, extended => define el algoritmo con que va a hacer parsing la librería
-
-/////////Configuración:
-/////////app.set("view engine","jade");//Motor de vistas
 
 //Métodos HTTP: ARQUITECTURA REST(GET,POST,PUT,DELETE)
 app.get("/",function(req,res){
@@ -58,6 +44,7 @@ app.get("/",function(req,res){
 app.get("/login",function(req,res){
 
     //Encontrar todos los usuarios, doc => muestra el resultado de la consulta si err => NO es null, si err trae algún dato es porque hubo algún error
+    //Método API de mongoose: find
     User.find(function(err,doc){
         console.log("solicitud get /login enviada");
         console.log("\n\n *** doc=",doc);
@@ -75,8 +62,14 @@ app.post("/users", function(req,res){
     console.log("contraseña=",req.body.password);//lo toma de views/login.jade => name="email"
     console.log("Email=",req.body.email);//lo toma de views/login.jade => name="password"
     //Usuario nuevo:
-    var user = new User({email: req.body.email, password: req.body.password});//crea un nuevo usuario
+    var user = new User({
+        email: req.body.email,
+        password: req.body.password,
+        password_confirmation: req.body.password_confirmation
+    });//crea un nuevo usuario, lo valida con virtuals
+    console.log("***u.p_c=",user.password_confirmation);
     //Guardamos el usuario,requiere de un callback:
+    //Método API de mongoose: save
     user.save(function(){
         //Callback => Respuesta
         res.send("Guardamos tus datos");
