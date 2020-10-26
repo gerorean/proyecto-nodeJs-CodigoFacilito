@@ -63,6 +63,7 @@ var user_schema = new Schema({
     sex: {type:String,enum:{values: posibles_valores, message:"Opción no valida"}}//{type:String,enum:posibles_valores}
 });
 
+//VIRTUALES:
 //virtuals propiedades de un documento que no se guardan en la base de datos pero que si se mantienen en el objeto que extrae mongoose, no se comunican con mongoDB, 
 //sirven para establecer atributos de ciertas cosas. ej password-confirmation: confirma que el password este bien escrito, funciona como un validador ([{documentos} = modelos?    colección]) docs? son instancias de una colección que extraemos de la base de datos de mongodb?
 //Virtuals: - - validaciones si pasar por la base de datos, usa métodos para acceder y extraer del virtual:

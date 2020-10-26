@@ -64,6 +64,8 @@ app.post("/users", function(req,res){
     console.log("Email=",req.body.email);//lo toma de views/login.jade => name="password"
     
     //Campos usuario nuevo:
+    //El documento inicia como una instancia del objeto, en esta caso de clase tipo: User: recibe como parametro un objeto JSON con todos los atributos que va a tener el documento, pueden venir del schema o virtuales
+    //Este objeto esta en la memoría dinamica, no esta persistente, no esta guardado..
     var user = new User({
         email: req.body.email,
         password: req.body.password,
@@ -74,16 +76,31 @@ app.post("/users", function(req,res){
 
     });//crea un nuevo usuario, lo valida con virtuals
     console.log("***u.p_c=",user.password_confirmation);
-    //Guardamos el usuario,requiere de un callback:
-    //Método de la API de mongoose: save
-    user.save(function(err){//err => mongoose devuelve las validaciones que no pasan a nivel del schema, aquí se reciben los errores de mongoose
-        //Callback => Respuesta
+
+
+    //Guardamos el usuario, requiere de un callback como parametro:
+    //Método GUARDAR de la API de mongoose: save, SOBRE UN DOCUMENTO QUE YA EXISTE EN LA COLECCION DE MONGODB, ACTUALIZA LOS PARAMETROS QUE SE HAYAN MODIFICADO A LA INSTANCIA DEL OBJETO, LE ASIGNA UN IDENTIFICADOR _id
+    //A-> pasos para guardar: 1ro, tener un modelo definido en la parte de los schemas 
+    /*user.save(function(err, user, numero){//PARAMETROS: err => mongoose devuelve las validaciones que no pasan a nivel del schema, aquí se reciben los errores de mongoose; user => el documento que se creo, incluye el _id; numero => número de filas afectadas en mongodb, en este caso va a ser 1
+        //Callback, se ejecuta despues de que mongoose intenta guardar el objeto en la base de datos => Respuesta
         if(err){
             //console.log("***err=",err,"\n\n");
             console.log("***String(err)=",String(err));
         }
         res.send("Guardamos tus datos");
-    })
+    })*/
+    //B-> OTRA FORMA DE ESCRIBIR EL METODO SAVE => promises en vez de Callbacks y funciones asincronas, en vez de recibir un CallBack retorna una promesa:
+    user.save()//El query retorna una promesa y ejecuta el metodo then()
+    .then(function(use){//then => como primer parametro recibe una función que hace cualquier cosa despues del guardado y..
+        res.send("Guardamos tus datos de usuario excitosamente");
+    },function(err){//como segundo parametro una función para manejar los errores..
+        if(err){
+            console.log("***String(err)=",String(err));
+        }
+        res.send("No pudimos guardar la imformación");
+    });
+    
+    
     //Respuesta
     //res.send("Recibimos tus datos");
 })
@@ -104,3 +121,6 @@ app.post("/",function(req,res){
 })
 */
 app.listen(3000);//Escucha por el puerto
+
+//GLOSARIO
+//un objeto es una instancia de una clase. Esto es, un miembro de una clase que tiene atributos en lugar de variables. En un contexto del mundo real, podríamos pensar en "Casa" como una clase y en un chalet como una instancia
