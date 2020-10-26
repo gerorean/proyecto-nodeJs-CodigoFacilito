@@ -62,11 +62,16 @@ app.post("/users", function(req,res){
     console.log("req.body=",req.body);//objeto con los parametros de la peticion
     console.log("contraseña=",req.body.password);//lo toma de views/login.jade => name="email"
     console.log("Email=",req.body.email);//lo toma de views/login.jade => name="password"
-    //Usuario nuevo:
+    
+    //Campos usuario nuevo:
     var user = new User({
         email: req.body.email,
         password: req.body.password,
-        password_confirmation: req.body.password_confirmation
+        password_confirmation: req.body.password_confirmation,
+        
+        //SOLUCION ERROR: => String(err)= ValidationError: username: Path `username` is required.
+        username: req.body.username
+
     });//crea un nuevo usuario, lo valida con virtuals
     console.log("***u.p_c=",user.password_confirmation);
     //Guardamos el usuario,requiere de un callback:
