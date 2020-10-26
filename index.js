@@ -8,7 +8,8 @@
 //mongo --version                   =>3.0.0 Base de datos no SQL no relacional
 //npm install mongoose --save       =>4.3.6 Modelado de objetos en node.Js, busca la parte de las consultas mediante un api, mapea una clase que es un modelo con una tabla
 //mongod    =>ejecutar el servidor con mongo
-
+//ªcd <carpetaMongodb>
+//ªmongod --dbpath=data --bind_ip 127.0.0.1
 
 
 //Solicitud de librerias:
@@ -69,9 +70,13 @@ app.post("/users", function(req,res){
     });//crea un nuevo usuario, lo valida con virtuals
     console.log("***u.p_c=",user.password_confirmation);
     //Guardamos el usuario,requiere de un callback:
-    //Método API de mongoose: save
-    user.save(function(){
+    //Método de la API de mongoose: save
+    user.save(function(err){//err => mongoose devuelve las validaciones que no pasan a nivel del schema, aquí se reciben los errores de mongoose
         //Callback => Respuesta
+        if(err){
+            //console.log("***err=",err,"\n\n");
+            console.log("***String(err)=",String(err));
+        }
         res.send("Guardamos tus datos");
     })
     //Respuesta

@@ -20,19 +20,26 @@ var Schema = mongoose.Schema;//Atributo que mapea, retorna un objeto que es el s
 //Configuración:
 mongoose.connect("mongodb://localhost/fotos");//Conexión: Espeficifa el servidor nos vamos a conectar / y luego el nombre de nuestra base de datos
 
+//Validación de rangos, va de la mano con enum dentro del Schema, ver sex...
+var posibles_valores = ["M","F"];
+
+//Validación de expresiones regulares, va de la mano con match dentro del Schema, ver email...
+var email_match = [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,"Coloca un email válido"];
 
 //INICIO DE LA CONEXIÓN CON LA BASE DE DATOS: - - - - PARALELO: [Colecciones] => tablas  COMO   {Documentos} => filas  resultado => [{bla}{bla}{bla}...]
 //1ro-Schemas => Un esquema corresponde a una colección y definen la forma que van a tener nuestros documentos en la colección de mongo, crean objetos que mongoose entiende con un esquema, son como en la estructura de la tabla
 //Todos los esquemas pertenecen a una colección en la base de datos en mongodb
 var user_schema = new Schema({
     //estructura JSON que define el documento, pasamos los atributos como claves para cada valor del JSON y como valor pasamos el tipo de dato, ejemplo:
-    name: String,
+    //las validaciones en mongoose se hacen a nivel del schema, implica required:true a los campos que se van a validar, los errores son asincronos..
+    name:String, //{type:String, required:"el nombre es obligatorio"},
     last_name:String,
-    username: String,
-    password: String,
-    age: Number,
-    email: String,
-    date_of_birth: Date
+    username: {type:String,required:true,maxlength:[50,"El Username es muy grande"]},//String,
+    password: {type:String,minlength:[8,"El password es muy corto"]},//String,
+    age: {type: Number,min:[5,"La edad no puede ser menor de 5"],max:[100,"La edad no puede ser mayor de 100"]} ,//Number,
+    email: {type:String, required: "El correo es obligatorio",match:email_match},//String,
+    date_of_birth: Date,
+    sex: {type:String,enum:{values: posibles_valores, message:"Opción no valida"}}//{type:String,enum:posibles_valores}
 });
 
 //virtuals propiedades de un documento que no se guardan en la base de datos pero que si se mantienen en el objeto que extrae mongoose, no se comunican con mongoDB, 
