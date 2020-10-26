@@ -40,21 +40,35 @@ app.get("/",function(req,res){
     //res.send("Hola mundo");
     //res.render("index",{hola:"Hola Rodrigo"});//Renderiza el archivo jade, como segundo parametro podemos enviarle variables con un hash o JSON de opciones
     res.render("index");//Renderiza el archivo jade
-})
+});
+
+app.get("/signup",function(req,res){
+
+    //Encontrar todos los usuarios, doc => muestra el resultado de la consulta si err => NO es null, si err trae algún dato es porque hubo algún error
+    //Método API de mongoose: find
+    User.find(function(err,doc){
+        console.log("solicitud get /signup enviada");
+        console.log("\n\n *** doc=",doc);
+        res.render("signup");//Renderiza el archivo jade
+    })
+    console.log("solicitud get /login enviada ___");
+    //Respuesta
+    //res.render("login");//Renderiza el archivo jade
+});
 
 app.get("/login",function(req,res){
 
     //Encontrar todos los usuarios, doc => muestra el resultado de la consulta si err => NO es null, si err trae algún dato es porque hubo algún error
     //Método API de mongoose: find
-    User.find(function(err,doc){
+    //User.find(function(err,doc){
         console.log("solicitud get /login enviada");
-        console.log("\n\n *** doc=",doc);
+        //console.log("\n\n *** doc=",doc);
         res.render("login");//Renderiza el archivo jade
-    })
+    //})
     console.log("solicitud get /login enviada ___");
     //Respuesta
     //res.render("login");//Renderiza el archivo jade
-})
+});
 
 
 app.post("/users", function(req,res){
@@ -100,10 +114,52 @@ app.post("/users", function(req,res){
         res.send("No pudimos guardar la imformación");
     });
     
-    
     //Respuesta
     //res.send("Recibimos tus datos");
-})
+});
+
+
+app.post("/sessions", function(req,res){
+    /*
+    console.log("solicitud post /sessions enviada");
+    console.log("req.body=",req.body);//objeto con los parametros de la peticion
+    console.log("contraseña=",req.body.password);//lo toma de views/login.jade => name="email"
+    console.log("Email=",req.body.email);//lo toma de views/login.jade => name="password"
+    */
+
+    //FINDERS => como encontrar documentos en nuestra base de datos en mongodb.. pasos: 1ro, tener un modelo ej => User, luego find (Devuelve una colección, o un arreglo de documentos que cumplen la condición) 
+    //A->
+    /*User.find({
+        email:req.body.email,
+        password:req.body.password
+    }//"username email",
+    ,function(err,docs){
+        console.log('***docs=',docs);
+        res.send("Hola mundo");
+    });//1er parametro: {query}, 2do parametro: "fields o camposQueQueremos", 3er parametro: Callback(error,documentosEncontrados)
+    */
+    
+    //B-> .findOne igual que .find pero solo trae un documento
+    User.findOne({
+        email:req.body.email,
+        password:req.body.password
+    }//"username email",
+    ,function(err,docs){
+        console.log('***docs=',docs);
+        res.send("Hola mundo");
+    });//1er parametro: {query}, 2do parametro: "fields o camposQueQueremos", 3er parametro: Callback(error,documentosEncontrados)
+    
+    /*
+    //C-> .findById igual que .findOne pero con el id
+    User.findById("5f95d1078326200f973491c2"//"_id",callback()
+    ,function(err,docs){
+        console.log('***docs=',docs);
+        res.send("Hola mundo");
+    });//1er parametro: {query}, 2do parametro: "fields o camposQueQueremos", 3er parametro: Callback(error,documentosEncontrados)
+    */
+});
+
+
 /*
 app.get("/login/:nombre",function(req,res){
     //Respuesta
@@ -124,3 +180,4 @@ app.listen(3000);//Escucha por el puerto
 
 //GLOSARIO
 //un objeto es una instancia de una clase. Esto es, un miembro de una clase que tiene atributos en lugar de variables. En un contexto del mundo real, podríamos pensar en "Casa" como una clase y en un chalet como una instancia
+//query -> consulta con condición
