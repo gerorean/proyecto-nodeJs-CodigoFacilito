@@ -1,21 +1,22 @@
 //agrega algo al package.json como una dependencia más => --save, ejemplo: npm install mongodb@3.0.10 --save, lo que va luego del @ es la version que se requiere
 //npm init
-//npm install express --save        =>4.13.3 instalar un servidor
-//npm install jade --save           =>1.11.0 motor de vistas
+//npm install express --save            =>4.13.3 instalar un servidor
+//npm install jade --save               =>1.11.0 motor de vistas
 //https://getbootstrap.com/
-//npm install body-parser --save    =>1.14.2 leer parametros que vienen en el cuerpo de la petición
+//npm install body-parser --save        =>1.14.2 leer parametros que vienen en el cuerpo de la petición
 //https://www.mongodb.com
-//mongo --version                   =>3.0.0 Base de datos no SQL no relacional
-//npm install mongoose --save       =>4.3.6 Modelado de objetos en node.Js, busca la parte de las consultas mediante un api, mapea una clase que es un modelo con una tabla
+//mongo --version                       =>3.0.0 Base de datos no SQL no relacional
+//npm install mongoose --save           =>4.3.6 Modelado de objetos en node.Js, busca la parte de las consultas mediante un api, mapea una clase que es un modelo con una tabla
 //mongod    =>ejecutar el servidor con mongo
 //ªcd <carpetaMongodb>
 //ªmongod --dbpath=data --bind_ip 127.0.0.1
-
+//npm install express-session --save    =>1.13.0 Manejo de sesiones con express
 
 //Solicitud de librerias:
 var express = require ("express");
 var bodyParser = require("body-parser");
 var User = require("./models/user").User;
+var session = require("express-session");
 
 //Objetos:
 var app = express();
@@ -24,7 +25,7 @@ var app = express();
 app.set("view engine","jade");//Motor de vistas tipo..
 
 
-//MIDDLEWARES:
+//MIDDLEWARES (.use):
 //..de archivos estaticos => Sirve archivos estaticos, en la ruta especifica; Ej ruta midominio.com/public/:
 app.use("/public",express.static('public'));
 app.use("/public",express.static('assets'));
@@ -33,10 +34,21 @@ app.use("/public",express.static('assets'));
 app.use(bodyParser.json());//para peticiones application/json
 app.use(bodyParser.urlencoded({extended:true}));//para peticiones url, extended => define el algoritmo con que va a hacer parsing la librería
 
+//..de manejo de sesiones
+app.use(session({
+    //Serie de parametros que definen el comportamiento de la session:
+    secret: "123byuhbsdah12ub"//secret => identificadores para las sessión únicos
+    /*,genid: function(req){//Opcional: genid => función que genera el id de la sesión, este id se almacena en el lado del cliente, el resto de la información de la sesión se almacena en el lado del servidor
+    }*/
+    ,resave: false //false => resave define si la sesión debe volverse a guardar porque hay alguna modificación, o se vuelve a guardar sin no hay cambios, se usa para el caso de 2 usuarios que ingresan con la misma sesion
+    ,saveUninitialized: false //false => saveUni.. define si la sesión debe guardarse aún cuando lo sesión no este inicializada, (inicializada: sesión nueva pero no ha sido modificada)
+}))
+
 //Métodos HTTP: ARQUITECTURA REST(GET,POST,PUT,DELETE)
 app.get("/",function(req,res){
     //Respuesta
     console.log("solicitud get / enviada");
+    console.log("req.session.user_id=",req.session.user_id);//id del usuario que hemos asignado
     //res.send("Hola mundo");
     //res.render("index",{hola:"Hola Rodrigo"});//Renderiza el archivo jade, como segundo parametro podemos enviarle variables con un hash o JSON de opciones
     res.render("index");//Renderiza el archivo jade
@@ -144,8 +156,9 @@ app.post("/sessions", function(req,res){
         email:req.body.email,
         password:req.body.password
     }//"username email",
-    ,function(err,docs){
-        console.log('***docs=',docs);
+    ,function(err,userf){
+        console.log('***docs=',userf);//aqui encontre al usuario del que quiero guardar la sesión
+        req.session.user_id = userf._id;//req.session => objeto con info de la sesion disponible del usuario
         res.send("Hola mundo");
     });//1er parametro: {query}, 2do parametro: "fields o camposQueQueremos", 3er parametro: Callback(error,documentosEncontrados)
     
@@ -181,3 +194,8 @@ app.listen(3000);//Escucha por el puerto
 //GLOSARIO
 //un objeto es una instancia de una clase. Esto es, un miembro de una clase que tiene atributos en lugar de variables. En un contexto del mundo real, podríamos pensar en "Casa" como una clase y en un chalet como una instancia
 //query -> consulta con condición
+//SOLUCION DE ERRORES
+//Error: listen EADDRINUSE: address already in use :::3000
+//ª lsof -i tcp:3000    =>lsof -i tcp:<numeroDelPuerto>
+//ª kill -9 8745        =>kill -9 <node>
+//ver mas en https://levelup.gitconnected.com/how-to-kill-server-when-seeing-eaddrinuse-address-already-in-use-16c4c4d7fe5d
