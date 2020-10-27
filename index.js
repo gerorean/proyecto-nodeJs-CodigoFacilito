@@ -13,11 +13,12 @@
 //npm install express-session --save    =>1.13.0 Manejo de sesiones con express
 
 //Solicitud de librerias:
-var express = require ("express");
+var express = require("express");
 var bodyParser = require("body-parser");
-var User = require("./models/user").User;
+var User = require("./models/user").User;//almacena el user
 var session = require("express-session");
-
+var router_app = require("./routes_app");//almacena el router
+var session_middleware = require("./middlewares/session");//almacena el middleware
 //Objetos:
 var app = express();
 
@@ -25,7 +26,7 @@ var app = express();
 app.set("view engine","jade");//Motor de vistas tipo..
 
 
-//MIDDLEWARES (.use):
+//CUSTOM MIDDLEWARES (.use): montamos algo =>software personalizado que actúa como puente entre un sistema operativo o base de datos y las aplicaciones, especialmente en una red.
 //..de archivos estaticos => Sirve archivos estaticos, en la ruta especifica; Ej ruta midominio.com/public/:
 app.use("/public",express.static('public'));
 app.use("/public",express.static('assets'));
@@ -43,6 +44,9 @@ app.use(session({
     ,resave: false //false => resave define si la sesión debe volverse a guardar porque hay alguna modificación, o se vuelve a guardar sin no hay cambios, se usa para el caso de 2 usuarios que ingresan con la misma sesion
     ,saveUninitialized: false //false => saveUni.. define si la sesión debe guardarse aún cuando lo sesión no este inicializada, (inicializada: sesión nueva pero no ha sido modificada)
 }))
+
+//OBJETIVO  /app/imagenes-usarios-etc requieren que el usuario este logeado, las demas rutas van en / 
+//usando rutas modulares
 
 //Métodos HTTP: ARQUITECTURA REST(GET,POST,PUT,DELETE)
 app.get("/",function(req,res){
@@ -189,6 +193,11 @@ app.post("/",function(req,res){
     res.render("form");//Renderiza el archivo jade
 })
 */
+
+app.use("/app",session_middleware);//middleware que verifica si es un user_id
+app.use("/app",router_app);//le damos la ruta que queramos
+
+
 app.listen(3000);//Escucha por el puerto
 
 //GLOSARIO
