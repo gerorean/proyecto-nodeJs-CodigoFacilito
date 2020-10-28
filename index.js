@@ -15,7 +15,7 @@
 //Solicitud de librerias:
 var express = require("express");
 var bodyParser = require("body-parser");
-var User = require("./models/user").User;//almacena el user
+var User = require("./models/user").User;//importa el modelo del usuario
 var session = require("express-session");
 var router_app = require("./routes_app");//almacena el router
 var session_middleware = require("./middlewares/session");//almacena el middleware
@@ -163,7 +163,8 @@ app.post("/sessions", function(req,res){
     ,function(err,userf){
         console.log('***docs=',userf);//aqui encontre al usuario del que quiero guardar la sesión
         req.session.user_id = userf._id;//req.session => objeto con info de la sesion disponible del usuario
-        res.send("Hola mundo");
+        res.redirect("/app");//redireccionamos a la ruta para usuarios logeados => /app
+        //res.send("Hola mundo");
     });//1er parametro: {query}, 2do parametro: "fields o camposQueQueremos", 3er parametro: Callback(error,documentosEncontrados)
     
     /*

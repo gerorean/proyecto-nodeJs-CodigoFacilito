@@ -1,12 +1,18 @@
 extends ./layout.jade
 block contenido
-  h1 Formulario
-  form(action="/sessions",method="POST")
-    div(class="form-group")
+  // center-block => mx-auto
+  div(class="col-md-6 remove-float mx-auto big-top-space")
+    //h1 Formulario
+    h1 Iniciar sesión
+    form(action="/sessions", method="POST")
+      div(class="form-group")
         label(for="email") Email
         input(type="text", name="email", placeholder="_Email", id="email", class="form-control")
-    div(class="form-group")
+      div
         label(for="password") Contraseña
         input(type="password", name="password", placeholder="_Contraseña", id="password", class="form-control")
-    div
-        input(type="submit" value="Iniciar sesión" class="btn btn-info")
+      div(class="row top-space")
+        div(class="col-xs-12 col-sm-6")
+          input(type="submit" value="Iniciar sesión" class="btn btn-info")
+        div(class="col-xs-12 col-sm-6 text-right yel")
+          a(href="/signup") No tengo cuenta

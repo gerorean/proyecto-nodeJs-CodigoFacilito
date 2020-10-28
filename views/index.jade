@@ -1,6 +1,9 @@
 extends ./layout.jade
 block contenido
-  h1 Bienvenidos a FotoFacilito
-  h2 Esta muy bien
-  a(href="/login") Iniciar sesión
-  a(href="/signup") Registro
+  // center-block => mx-auto
+  div(class="col-md-8 remove-float mx-auto text-center big-top-space")
+    h1 Bienvenidos a FotoFacilito
+    h2 Esta muy bien
+    a(href="/login" class="right-space") Iniciar sesión
+    a(href="/signup") Registro
+
