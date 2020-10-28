@@ -16,7 +16,7 @@ module.exports = function(req,res,next){
             }else{
                 var author = "enlore";
                 console.log("A***     ***     ***user=",user);
-                res.locals = { user: user };//Toma la info del user_id y pasa la info del user al siguiente middleware
+                res.locals = { user: user };//Toma la info del user_id y la pasa al siguiente middleware, no funciono esa parte con el home.jade
                 console.log("B***     ***     ***res.locals=",res.locals);
                 console.log("C***     ***     ***res.locals.user=",res.locals.user);
                 console.log("D***     ***     ***res.locals.user.email=",res.locals.user.email);
